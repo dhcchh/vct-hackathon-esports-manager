@@ -1,0 +1,189 @@
+openapi: 3.0.0
+
+info:
+  title: Valorant Team Builder API
+  version: 1.0.0
+  description: API to create a valorant team
+paths:
+  /get-team-by-league:
+    get:
+      summary: Retrieve information of players from a league.
+      description: Retrieve information of players from a VCT league to build a team.
+      operationId: get-team-by-league
+      parameters:
+        - name: league
+          in: query
+          description: The name of the league to retrieve players from. 
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful retrieval of data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                      description: Retrieved content
+                    metadata:
+                      type: object
+                      description: Metadata associated with the content
+                      additionalProperties:
+                        type: string
+        '400':
+          description: Invalid API path or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid API Path"
+        '500':
+          description: Server error during data retrieval
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error retrieving data"
+  /get-mixed-gender-team:
+    get:
+      summary: Retrieve information of players between genders.
+      description: Retrieve players that includes at least 2 players from unrepresented groups.
+      operationId: get-mixed-gender-team
+      parameters: []
+      responses:
+        '200':
+          description: Successful retrieval of data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                      description: Retrieved content
+                    metadata:
+                      type: object
+                      description: Metadata associated with the content
+                      additionalProperties:
+                        type: string
+        '400':
+          description: Invalid API path or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid API Path"
+        '500':
+          description: Server error during data retrieval
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error retrieving data"
+  /get-cross-regional-team:
+    get:
+      summary: Retrieve information of players between regions.
+      description: Retrieve information of players from at least 3 different regions to build a team.
+      operationId: get-cross-regional-team
+      parameters: []
+      responses:
+        '200':
+          description: Successful retrieval of data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                      description: Retrieved content
+                    metadata:
+                      type: object
+                      description: Metadata associated with the content
+                      additionalProperties:
+                        type: string
+        '400':
+          description: Invalid API path or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid API Path"
+        '500':
+          description: Server error during data retrieval
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error retrieving data"
+  /get-semi-pro-team:
+    get:
+      summary: Retrieve information of players with semi pros
+      description: Retrieve information of players with at least 2 semi-professional players.
+      operationId: get-semi-pro-team
+      parameters: []
+      responses:
+        '200':
+          description: Successful retrieval of data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                      description: Retrieved content
+                    metadata:
+                      type: object
+                      description: Metadata associated with the content
+                      additionalProperties:
+                        type: string
+        '400':
+          description: Invalid API path or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid API Path"
+        '500':
+          description: Server error during data retrieval
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error retrieving data"
