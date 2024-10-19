@@ -5,9 +5,11 @@ import time
 # API endpoint
 API_ENDPOINT = "https://liquipedia.net/valorant/api.php"
 
+email = 'your-email-here'       # Use email to call liquipedia API
+
 # Custom headers to comply with Liquipedia's guidelines
 headers = {
-    'User-Agent': 'ValorantHackathonDataScraper/1.0 (chdinghao@gmail.com)',
+    'User-Agent': 'ValorantHackathonDataScraper/1.0 ({email}})',
     'Accept-Encoding': 'gzip'
 }
 
