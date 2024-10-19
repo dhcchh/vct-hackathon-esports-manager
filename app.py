@@ -2,26 +2,53 @@ import streamlit as st
 import json
 import uuid
 from services import bedrock_agent_runtime 
+import re
 
 # Set up Streamlit page configuration
 st.title('VALORANT eSports Manager Chatbot')
 st.write('Enter a prompt to receive a response from the Bedrock Agent.')
 
+# Initialize session state
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())  # Generate a unique session ID
+if "conversation_history" not in st.session_state:
+    st.session_state.conversation_history = []  # Initialize conversation history
+
 # Function to handle invoking the Bedrock Agent
 def get_bedrock_agent_response(prompt):
     # Retrieve Agent ID and Alias ID from Streamlit secrets
-    agent_id = st.secrets["AWS_AGENT_ID"]  # Use your Bedrock Agent ID
-    agent_alias_id = st.secrets["AWS_ALIAS_ID"]  # Use your Bedrock Agent Alias
-    session_id = str(uuid.uuid4())  # Generate a unique session ID
+    agent_id = st.secrets["AWS_AGENT_ID"]
+    agent_alias_id = st.secrets["AWS_ALIAS_ID"]
+    session_id = st.session_state.session_id
+
+    # Check Prompt for team building
+    if re.search(r"\bbuild a team\b", prompt.lower()):
+        modified_prompt = prompt + "A team must have only 5 players. At least 1 of them is igl. 1 entry. 1 smoker. 1 support."
+    else:
+        modified_prompt = prompt
 
     try:
-        # Invoke the Bedrock Agent using the defined logic
-        response = bedrock_agent_runtime.invoke_agent(
+        # Combine structured conversation history with the current prompt
+        structured_history = [
+            f"User: {entry['user']}\nAgent: {entry['agent']}" for entry in st.session_state.conversation_history
+        ]
+        combined_prompt = "\n".join(structured_history + [f"User: {modified_prompt}"])
+        
+        # Invoke the Bedrock Agent using the combined structured prompt
+        response = bedrock_agent_runtime.invoke_agent(  
             agent_id,
             agent_alias_id,
             session_id,
-            prompt
+            combined_prompt
         )
+        
+        # Store the conversation in a structured format
+        st.session_state.conversation_history.append({
+            "user": prompt,
+            "agent": response["output_text"],
+            "trace": response.get("trace", None)
+        })
+        
         return response
     except Exception as e:
         st.error(f"An error occurred: {e}")
@@ -41,13 +68,13 @@ if st.button('Submit'):
                 st.write(response["output_text"])
 
                 # Display any citations found
-                if response["citations"]:
+                if response.get("citations"):
                     st.subheader("Citations:")
                     for citation in response["citations"]:
                         st.write(f"- {citation}")
 
                 # Optional: Show traces (for debugging or insights)
-                if response["trace"]:
+                if response.get("trace"):
                     st.subheader("Trace Information:")
                     trace_str = json.dumps(response["trace"], indent=2)
                     st.code(trace_str, language="json")
