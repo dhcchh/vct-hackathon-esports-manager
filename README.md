@@ -35,7 +35,8 @@ Core Architecture of the VCT Hackathon Project.
 1. **Amazon Bedrock**  
    Provides **generative AI** capabilities for retrieving and generating answers based on queries related to team compositions, player roles, and performance metrics. AI Models used are:
    - Embedding Cohere English v3
-   - Claude Haiku 3.0 LLM 
+   - Claude Haiku 3.0 LLM
+   We also utilise the Knowledge Base (KB) and agents feature under Bedrock.
 
 3. **Pinecone**  
    A **vector database** for storing and retrieving embeddings. Used to handle player and metadata embeddings efficiently, enabling fast and accurate responses to queries. We use Pinecone as it is the most cost effective option 
@@ -44,7 +45,7 @@ Core Architecture of the VCT Hackathon Project.
    Used for **storing data** and other files in an accessible bucket. The data is fetched, processed, and used for embedding and retrieval.
 
 5. **AWS Lambda**  
-   A **serverless compute service** that automates data processing tasks, like fetching data from the S3 bucket and triggering other processes in response to events, enabling seamless integration of the various services.
+   A **serverless compute service** triggering other processes in response to events. We utilise AWS Lambda to query the KB whenever a user sends a prompt. 
 
 6. **Streamlit**  
    A **frontend interface** for user interaction. It powers a chat interface where users can ask questions and receive real-time team recommendations and player insights.
