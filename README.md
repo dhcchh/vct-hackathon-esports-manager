@@ -7,6 +7,8 @@ vct-chatbot-repository/
 │   ├── bedrock-agent-action-group-lambda.py
 │   ├── bedrock-agent-action-group-openapi.yaml
 │   └── upsert.py
+│   └── retrieve_data.py
+│   └── convert_data_to_json.py
 ├── services/
 │   └── bedrock_agent_runtime.py
 ├── data/
