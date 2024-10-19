@@ -1,5 +1,7 @@
-This is the repository for VCT Hackathon Submission
+# VCT Hackathon Submission
 
+This is the repository for VCT Hackathon Submission.
+```
 vct-chatbot-repository/
 ├── src/
 │   ├── bedrock-agent-action-group-lambda.py
@@ -13,3 +15,4 @@ vct-chatbot-repository/
 ├── README.md
 ├── app.py
 └── requirements.py
+```
