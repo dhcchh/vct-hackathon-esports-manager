@@ -12,8 +12,8 @@ vct-chatbot-repository/
 │   ├── bedrock-agent-action-group-lambda.py
 │   ├── bedrock-agent-action-group-openapi.yaml
 │   └── aws-s3-upsert.py
-│   └── liquipedia-api-call.py
-│   └── liquipedia-convert-to-json.py
+│   └── local-liquipedia-api-call.py
+│   └── local-liquipedia-convert-json.py
 ├── services/
 │   └── bedrock_agent_runtime.py
 ├── data/
