@@ -9,8 +9,8 @@ The goal is to support the scouting and recruitment process for VALORANT eSports
 ```
 vct-chatbot-repository/
 ├── src/
-│   ├── bedrock-agent-action-group-lambda.py
-│   ├── bedrock-agent-action-group-openapi.yaml
+│   └── bedrock-agent-action-group-lambda.py
+│   └── bedrock-agent-action-group-openapi.yaml
 │   └── aws-s3-upsert.py
 │   └── local-liquipedia-api-call.py
 │   └── local-liquipedia-convert-json.py
@@ -23,6 +23,11 @@ vct-chatbot-repository/
 ├── app.py
 └── requirements.py
 ```
+* `src` : Source files
+* `services` : Services called to invoke our Bedrock Agent.
+* `data` : Contains our source files and metadata on player and VALORANT information.
+* `app.py` : Script for Streamlit Application. 
+* `requirements.py` : Dependencies needed for the Streamlit Application. 
 
 # Model Architecture 
 Core Architecture of the VCT Hackathon Project. 
@@ -58,7 +63,6 @@ This core architecture integrates AI, database, frontend, and cloud storage comp
 
 3. **Country of Origin Data**  
    Player languages are assumed based on their country of origin, and other languages that a player might speak are imputed manually.
-
 
 These sources provide the necessary data to build effective team compositions, assess player skills, and map regional playstyles for VALORANT eSports scouting.
 
