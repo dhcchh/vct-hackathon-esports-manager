@@ -44,6 +44,7 @@ Core Architecture of the VCT Hackathon Project
 6. **Streamlit**  
    A **frontend interface** for user interaction. It powers a chat interface where users can ask questions and receive real-time team recommendations and player insights.
 
-This core architecture integrates AI, database, frontend, and cloud storage components to deliver team building recommendations and player performance analysis.
+This core architecture integrates AI, database, frontend, and cloud storage components to deliver team building recommendations and player performance analysis. A visulisation of the overall architechture is provided below 
+
 ![RAG-architechture](https://github.com/user-attachments/assets/7e607642-563f-4533-abd4-4e97120515c9)
 
