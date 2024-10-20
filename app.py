@@ -70,16 +70,31 @@ def get_bedrock_agent_response(prompt):
         st.error(f"An error occurred: {e}")
         return None
 
-# Create a chat-like interface by displaying previous conversation
+# Create a scrollable chat-like interface by displaying previous conversation
 st.write("### Conversation History")
 chat_container = st.container()
 
-# Show the conversation history in a chat format
+# Add a CSS style to make the chat scrollable
+st.markdown("""
+    <style>
+    .chat-container {
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        background-color: #f9f9f9;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# Use a div to make the conversation history scrollable
 with chat_container:
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     for chat in st.session_state.conversation_history:
         st.markdown(f"**🗨️ User:** {chat['user']}")
         st.markdown(f"**🤖 ScoutBot:** {chat['agent']}")
         st.divider()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # User input for the prompt
 prompt = st.text_area('Your Prompt', height=100)
