@@ -1,4 +1,4 @@
-# VCT Hackathon Submission
+# ScoutBot : Submission for VCT eSports Manager Hackathon
 
 This is our repository for VCT eSports Manager Hackathon. It is made by [Hoo Kai Sng](https://www.linkedin.com/in/kai-sng-hoo-081a3622a/) , [Chan Ding Hao](https://www.linkedin.com/in/dhchan/), [Chua Wei Qi](https://www.linkedin.com/in/wei-qi-chua/) and [Yip Kai Men](https://www.linkedin.com/in/yipkaimen/). 
 
