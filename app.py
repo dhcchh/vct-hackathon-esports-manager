@@ -41,7 +41,7 @@ if prompt := st.chat_input():
             prompt 
         + " List exactly 5 players with their respective roles. Each player must be a separate entry, even if their roles are the same."
         + " Do not group players under the same role, list them individually."
-        + " Format as follows: (IGL)1. PlayerName - Role, 2. PlayerName - Role, 3. PlayerName - Role, 4. PlayerName - Role, 5. PlayerName - Role."
+        + " Format as follows: (IGL + Role)1. PlayerName , (Role)2. PlayerName , (Role)3. PlayerName , (Role)4. PlayerName  , (Role)5. PlayerName"
         + " Only list 5 players, and no more."
         + " Answer questions about player performance with specific agents (in-game playable characters)."
         + " Include category of agent."
