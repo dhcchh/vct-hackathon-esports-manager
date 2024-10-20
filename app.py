@@ -24,12 +24,11 @@ def get_bedrock_agent_response(prompt):
     # Check Prompt for team building, provide additional context
     if re.search(r"\bbuild a team\b", prompt.lower()):
         modified_prompt = (prompt 
-                           + " A team must have 5 players." 
-                           + " Answer questions about player performance with specific agents (in-game playable characters)."
-                           + " Assign roles to players on the team and explain their contribution."
-                           + " Include category of agent."
+                           + " Use all 5 players from your functions." 
+                           + " Give player performance."
+                           + " Assign roles to players on the team and include category of agents."
                            + " One of these players must also take on additional role of in-game leader (IGL)." 
-                           + " Provide insights on team strategy and hypothesize team strengths and weaknesses.")
+                           + " Give team strategy, strengths and weaknesses.")
     else:
         modified_prompt = prompt
 
