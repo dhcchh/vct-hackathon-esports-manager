@@ -128,7 +128,7 @@ if st.button('Send'):
         with st.spinner('Processing...'):
             response = get_bedrock_agent_response(prompt)
             if response:
-                # Refresh the chat interface after getting a response
-                st.experimental_rerun()
+                # The conversation is automatically displayed on each re-run
+                pass
     else:
         st.warning('Please enter a prompt before sending.')
