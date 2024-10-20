@@ -65,6 +65,3 @@ This core architecture integrates AI, database, frontend, and cloud storage comp
 3. **Country of Origin Data**  
    Player languages are assumed based on their country of origin, and other languages that a player might speak are imputed manually.
 
-These sources provide the necessary data to build effective team compositions, assess player skills, and map regional playstyles for VALORANT eSports scouting.
-
-
