@@ -39,14 +39,16 @@ if prompt := st.chat_input():
     if re.search(r"\bbuild a team\b", prompt.lower()):
         modified_prompt = (
             prompt 
-            + " List exactly 5 players, each with their respective roles. Format as follows: (IGL)1. 2. 3. 4. 5."
-            + " Only 5 players should be mentioned, no more, no less."
+            + " List exactly 5 players with their respective roles. Each player must be a separate entry, even if their roles are the same."
+            + " Format as follows: (IGL)1. PlayerName - Role, 2. PlayerName - Role, 3. PlayerName - Role, 4. PlayerName - Role, 5. PlayerName - Role."
+            + " Ensure there are no more than 5 players."
             + " Answer questions about player performance with specific agents (in-game playable characters)."
             + " Include category of agent."
-            + " Provide insights on team strategy, strengths, and weaknesses."
+            + " Provide team strategy, strengths, and weaknesses."
         )
     else:
         modified_prompt = prompt
+
     st.session_state.messages.append({"role": "user", "content": modified_prompt})
     with st.chat_message("user"):
         st.write(prompt)
