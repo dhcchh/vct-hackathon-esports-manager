@@ -70,12 +70,16 @@ def get_bedrock_agent_response(prompt):
         st.error(f"An error occurred: {e}")
         return None
 
-# Display conversation history in a chat-like interface
+# Create a chat-like interface by displaying previous conversation
 st.write("### Conversation History")
-for chat in st.session_state.conversation_history:
-    st.write(f"**User:** {chat['user']}")
-    st.write(f"**ScoutBot:** {chat['agent']}")
-    st.write("---")  # Separator line for readability
+chat_container = st.container()
+
+# Show the conversation history in a chat format
+with chat_container:
+    for chat in st.session_state.conversation_history:
+        st.markdown(f"**🗨️ User:** {chat['user']}")
+        st.markdown(f"**🤖 ScoutBot:** {chat['agent']}")
+        st.divider()
 
 # User input for the prompt
 prompt = st.text_area('Your Prompt', height=100)
@@ -91,5 +95,7 @@ if st.button('Submit'):
                     st.subheader("Citations:")
                     for citation in response["citations"]:
                         st.write(f"- {citation}")
+                # Refresh the chat interface after getting a response
+                st.experimental_rerun()
     else:
         st.warning('Please enter a prompt before submitting.')
