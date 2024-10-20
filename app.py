@@ -1,135 +1,101 @@
-import streamlit as st
 import json
+import os
+from services import bedrock_agent_runtime
+import streamlit as st
 import uuid
-from services import bedrock_agent_runtime 
-import re
 
-# Set up Streamlit page configuration
-st.set_page_config(
-    page_title="VALORANT eSports ScoutBot",
-    page_icon="🎯",
-    layout="centered"
-)
+# Get config from environment variables
+agent_id = os.environ.get("BEDROCK_AGENT_ID")
+agent_alias_id = os.environ.get("BEDROCK_AGENT_ALIAS_ID", "TSTALIASID")  # Default alias ID for testing
+ui_title = os.environ.get("BEDROCK_AGENT_TEST_UI_TITLE", "Agents for Amazon Bedrock Test UI")
+ui_icon = os.environ.get("BEDROCK_AGENT_TEST_UI_ICON")
 
-# Display the welcome message once, at the start of the session
-if "has_started" not in st.session_state:
-    st.session_state.has_started = True
-    st.write(
-        """
-        # Welcome to VALORANT eSports ScoutBot! 🎯
-        Hi there! 👋 I'm ScoutBot, your friendly digital assistant here to help with scouting and recruiting top VALORANT esports players. 
-        Whether you're looking to build a well-rounded team, analyze player performance, or explore potential recruits, I'm here to assist you every step of the way. 
+def init_state():
+    st.session_state.session_id = str(uuid.uuid4())
+    st.session_state.messages = []
+    st.session_state.citations = []
+    st.session_state.trace = {}
 
-        You can ask me questions like:
-        - "Build a team using only players from VCT International."
-        - "Build a team that includes at least two players from an underrepresented group, such as the Game Changers program."
-        - "Can you give insights on player performance with specific agents?"
+# General page configuration and initialization
+st.set_page_config(page_title=ui_title, page_icon=ui_icon, layout="wide")
+st.title(ui_title)
+if len(st.session_state.items()) == 0:
+    init_state()
 
-        My goal is to make your scouting process easier and help you assemble a winning team! Let’s get started! 🚀
-        """
-    )
+# Sidebar button to reset session state
+with st.sidebar:
+    if st.button("Reset Session"):
+        init_state()
 
-# Initialize session state
-if "session_id" not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())  # Generate a unique session ID
-if "conversation_history" not in st.session_state:
-    st.session_state.conversation_history = []  # Initialize conversation history
+# Display chat history from session state
+for message in st.session_state.messages:
+    if message["role"] == "user":
+        with st.chat_message("user"):
+            st.markdown(f"🗨️ **User:** {message['content']}", unsafe_allow_html=True)
+    elif message["role"] == "assistant":
+        with st.chat_message("assistant"):
+            st.markdown(f"🤖 **ScoutBot:** {message['content']}", unsafe_allow_html=True)
 
-# Function to handle invoking the Bedrock Agent
-def get_bedrock_agent_response(prompt):
-    # Retrieve Agent ID and Alias ID from Streamlit secrets
-    agent_id = st.secrets["AWS_AGENT_ID"]
-    agent_alias_id = st.secrets["AWS_ALIAS_ID"]
-    session_id = st.session_state.session_id
+# Chat input that invokes the agent
+if prompt := st.chat_input("Type your message here..."):
+    # Append the user's input to the message history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(f"🗨️ **User:** {prompt}")
 
-    # Check Prompt for team building, provide additional context
-    if re.search(r"\bbuild a team\b", prompt.lower()):
-        modified_prompt = (prompt 
-                           + " List all 5 players and their roles. Include category of agents."
-                           + " Give player performance."
-                           + " 1 of these players must also take on additional role of in-game leader (IGL)." 
-                           + " Give team strategy, strengths and weaknesses, language issues.")
-    else:
-        modified_prompt = prompt
+    # Create a placeholder for ScoutBot's response
+    with st.chat_message("assistant"):
+        placeholder = st.empty()
+        placeholder.markdown("🤖 ScoutBot is thinking...")
 
-    try:
-        # Combine structured conversation history with the current prompt
-        structured_history = [
-            f"User: {entry['user']}\nAgent: {entry['agent']}" for entry in st.session_state.conversation_history
-        ]
-        combined_prompt = "\n".join(structured_history + [f"User: {modified_prompt}"])
-        
-        # Invoke the Bedrock Agent using the combined structured prompt
-        response = bedrock_agent_runtime.invoke_agent(  
+        # Call Bedrock agent to get a response
+        response = bedrock_agent_runtime.invoke_agent(
             agent_id,
             agent_alias_id,
-            session_id,
-            combined_prompt
+            st.session_state.session_id,
+            prompt
         )
-        
-        # Store the conversation in a structured format
-        st.session_state.conversation_history.append({
-            "user": prompt,
-            "agent": response["output_text"],
-            "trace": response.get("trace", None)
-        })
-        
-        return response
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        return None
 
-# Create a chat-like interface with the conversation history
-st.write("### Chat with ScoutBot")
+        output_text = response["output_text"]
 
-# Add CSS to make the chat scrollable and more like a traditional chat box
-st.markdown("""
-    <style>
-    .chat-container {
-        height: 500px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border-radius: 5px;
-        display: flex;
-        flex-direction: column-reverse; /* Keep the latest messages at the bottom */
-    }
-    .message {
-        padding: 5px;
-        margin-bottom: 5px;
-    }
-    .user-message {
-        text-align: left;
-        font-weight: bold;
-        color: #003399;
-    }
-    .bot-message {
-        text-align: left;
-        font-weight: bold;
-        color: #228B22;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+        # Add citations if any are present
+        if len(response["citations"]) > 0:
+            citation_num = 1
+            num_citation_chars = 0
+            citation_locs = ""
+            for citation in response["citations"]:
+                end_span = citation["generatedResponsePart"]["textResponsePart"]["span"]["end"] + 1
+                for retrieved_ref in citation["retrievedReferences"]:
+                    citation_marker = f"[{citation_num}]"
+                    output_text = output_text[:end_span + num_citation_chars] + citation_marker + output_text[end_span + num_citation_chars:]
+                    citation_locs = citation_locs + "\n<br>" + citation_marker + " " + retrieved_ref["location"]["s3Location"]["uri"]
+                    citation_num += 1
+                    num_citation_chars += len(citation_marker)
+                output_text = output_text[:end_span + num_citation_chars] + "\n" + output_text[end_span + num_citation_chars:]
+                num_citation_chars += 1
+            output_text = output_text + "\n" + citation_locs
 
-# Display the chat history inside the styled container
-with st.container():
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    for chat in reversed(st.session_state.conversation_history):
-        st.markdown(f"<div class='message user-message'>🗨️ User: {chat['user']}</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='message bot-message'>🤖 ScoutBot: {chat['agent']}</div>", unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        # Display the assistant's response
+        placeholder.markdown(f"🤖 **ScoutBot:** {output_text}", unsafe_allow_html=True)
 
-# User input for the prompt
-prompt = st.text_area('Your Prompt', height=100)
+        # Save response in session state to maintain chat history
+        st.session_state.messages.append({"role": "assistant", "content": output_text})
+        st.session_state.citations = response["citations"]
+        st.session_state.trace = response["trace"]
 
-# When the user submits the prompt
-if st.button('Send'):
-    if prompt.strip():
-        with st.spinner('Processing...'):
-            response = get_bedrock_agent_response(prompt)
-            if response:
-                # The conversation is automatically displayed on each re-run
-                pass
+# Additional sidebar feature for citations
+with st.sidebar:
+    st.subheader("Citations")
+    if len(st.session_state.citations) > 0:
+        citation_num = 1
+        for citation in st.session_state.citations:
+            for retrieved_ref_num, retrieved_ref in enumerate(citation["retrievedReferences"]):
+                with st.expander("Citation [" + str(citation_num) + "]", expanded=False):
+                    citation_str = json.dumps({
+                        "generatedResponsePart": citation["generatedResponsePart"],
+                        "retrievedReference": citation["retrievedReferences"][retrieved_ref_num]
+                    }, indent=2)
+                    st.code(citation_str, language="json")
+                citation_num += 1
     else:
-        st.warning('Please enter a prompt before sending.')
+        st.text("None")
