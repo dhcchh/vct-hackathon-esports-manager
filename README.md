@@ -33,11 +33,11 @@ vct-chatbot-repository/
 Core Architecture of the VCT Hackathon Project. 
 
 1. **Amazon Bedrock**  
-   Provides **generative AI** capabilities for retrieving and generating answers based on queries related to team compositions, player roles, and performance metrics. AI Models used are:
+   Provides **generative AI** capabilities for retrieving and generating answers based on queries related to team compositions, player roles, and performance metrics. We utilise the Knowledge Base (KB) and agents feature under Bedrock.
+AI Models used in the project are:
    - Embedding Cohere English v3
    - Claude Haiku 3.0 LLM
-   We also utilise the Knowledge Base (KB) and agents feature under Bedrock.
-
+     
 3. **Pinecone**  
    A **vector database** for storing and retrieving embeddings. Used to handle player and metadata embeddings efficiently, enabling fast and accurate responses to queries. We use Pinecone as it is the most cost effective option 
 
