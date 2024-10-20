@@ -51,7 +51,7 @@ if prompt := st.chat_input():
 
     with st.chat_message("assistant"):
         placeholder = st.empty()
-        placeholder.markdown("...")
+        placeholder.markdown("thinking...")
         response = bedrock_agent_runtime.invoke_agent(
             agent_id,
             agent_alias_id,
