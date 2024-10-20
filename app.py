@@ -8,7 +8,7 @@ import re
 # Get config from environment variables
 agent_id = st.secrets["AWS_AGENT_ID"]
 agent_alias_id = st.secrets["AWS_ALIAS_ID"]
-ui_title = "VCT Digital Assistant"
+ui_title = "ScoutBot"
 ui_icon = ""
 
 def init_state():
