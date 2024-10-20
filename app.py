@@ -3,12 +3,13 @@ import os
 from services import bedrock_agent_runtime
 import streamlit as st
 import uuid
+import re
 
 # Get config from environment variables
-agent_id = os.environ.get("BEDROCK_AGENT_ID")
-agent_alias_id = os.environ.get("BEDROCK_AGENT_ALIAS_ID", "TSTALIASID")  # Default alias ID for testing
-ui_title = os.environ.get("BEDROCK_AGENT_TEST_UI_TITLE", "Agents for Amazon Bedrock Test UI")
-ui_icon = os.environ.get("BEDROCK_AGENT_TEST_UI_ICON")
+agent_id = st.secrets["AWS_AGENT_ID"]
+agent_alias_id = st.secrets["AWS_ALIAS_ID"]
+ui_title = "Agents for Amazon Bedrock Test UI"
+ui_icon = ""
 
 def init_state():
     st.session_state.session_id = str(uuid.uuid4())
@@ -27,38 +28,39 @@ with st.sidebar:
     if st.button("Reset Session"):
         init_state()
 
-# Display chat history from session state
+# Messages in the conversation
 for message in st.session_state.messages:
-    if message["role"] == "user":
-        with st.chat_message("user"):
-            st.markdown(f"🗨️ **User:** {message['content']}", unsafe_allow_html=True)
-    elif message["role"] == "assistant":
-        with st.chat_message("assistant"):
-            st.markdown(f"🤖 **ScoutBot:** {message['content']}", unsafe_allow_html=True)
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"], unsafe_allow_html=True)
 
 # Chat input that invokes the agent
-if prompt := st.chat_input("Type your message here..."):
-    # Append the user's input to the message history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+if prompt := st.chat_input():
+    # Check Prompt for team building, provide additional context
+    if re.search(r"\bbuild a team\b", prompt.lower()):
+        modified_prompt = (prompt 
+                           + " List the 5 players with their respective roles." 
+                           + " 1 of these players must also take on additional role of in-game leader (IGL)." 
+                           + " Answer questions about player performance with specific agents (in-game playable characters)."
+                           + " Include category of agent."
+                           + " Provide insights on team strategy and hypothesize team strengths and weaknesses.")
+    else:
+        modified_prompt = prompt
+    st.session_state.messages.append({"role": "user", "content": modified_prompt})
     with st.chat_message("user"):
-        st.markdown(f"🗨️ **User:** {prompt}")
+        st.write(modified_prompt)
 
-    # Create a placeholder for ScoutBot's response
     with st.chat_message("assistant"):
         placeholder = st.empty()
-        placeholder.markdown("🤖 ScoutBot is thinking...")
-
-        # Call Bedrock agent to get a response
+        placeholder.markdown("...")
         response = bedrock_agent_runtime.invoke_agent(
             agent_id,
             agent_alias_id,
             st.session_state.session_id,
             prompt
         )
-
         output_text = response["output_text"]
 
-        # Add citations if any are present
+        # Add citations
         if len(response["citations"]) > 0:
             citation_num = 1
             num_citation_chars = 0
@@ -69,33 +71,86 @@ if prompt := st.chat_input("Type your message here..."):
                     citation_marker = f"[{citation_num}]"
                     output_text = output_text[:end_span + num_citation_chars] + citation_marker + output_text[end_span + num_citation_chars:]
                     citation_locs = citation_locs + "\n<br>" + citation_marker + " " + retrieved_ref["location"]["s3Location"]["uri"]
-                    citation_num += 1
-                    num_citation_chars += len(citation_marker)
+                    citation_num = citation_num + 1
+                    num_citation_chars = num_citation_chars + len(citation_marker)
                 output_text = output_text[:end_span + num_citation_chars] + "\n" + output_text[end_span + num_citation_chars:]
-                num_citation_chars += 1
+                num_citation_chars = num_citation_chars + 1
             output_text = output_text + "\n" + citation_locs
 
-        # Display the assistant's response
-        placeholder.markdown(f"🤖 **ScoutBot:** {output_text}", unsafe_allow_html=True)
-
-        # Save response in session state to maintain chat history
+        placeholder.markdown(output_text, unsafe_allow_html=True)
         st.session_state.messages.append({"role": "assistant", "content": output_text})
         st.session_state.citations = response["citations"]
         st.session_state.trace = response["trace"]
 
-# Additional sidebar feature for citations
-with st.sidebar:
-    st.subheader("Citations")
-    if len(st.session_state.citations) > 0:
-        citation_num = 1
-        for citation in st.session_state.citations:
-            for retrieved_ref_num, retrieved_ref in enumerate(citation["retrievedReferences"]):
-                with st.expander("Citation [" + str(citation_num) + "]", expanded=False):
-                    citation_str = json.dumps({
-                        "generatedResponsePart": citation["generatedResponsePart"],
-                        "retrievedReference": citation["retrievedReferences"][retrieved_ref_num]
-                    }, indent=2)
-                    st.code(citation_str, language="json")
-                citation_num += 1
-    else:
-        st.text("None")
+# trace_types_map = {
+#     "Pre-Processing": ["preGuardrailTrace", "preProcessingTrace"],
+#     "Orchestration": ["orchestrationTrace"],
+#     "Post-Processing": ["postProcessingTrace", "postGuardrailTrace"]
+# }
+
+# trace_info_types_map = {
+#     "preProcessingTrace": ["modelInvocationInput", "modelInvocationOutput"],
+#     "orchestrationTrace": ["invocationInput", "modelInvocationInput", "modelInvocationOutput", "observation", "rationale"],
+#     "postProcessingTrace": ["modelInvocationInput", "modelInvocationOutput", "observation"]
+# }
+
+# Sidebar section for trace
+# with st.sidebar:
+#     st.title("Trace")
+
+#     # Show each trace types in separate sections
+#     step_num = 1
+#     for trace_type_header in trace_types_map:
+#         st.subheader(trace_type_header)
+
+#         # Organize traces by step similar to how it is shown in the Bedrock console
+#         has_trace = False
+#         for trace_type in trace_types_map[trace_type_header]:
+#             if trace_type in st.session_state.trace:
+#                 has_trace = True
+#                 trace_steps = {}
+
+#                 for trace in st.session_state.trace[trace_type]:
+#                     # Each trace type and step may have different information for the end-to-end flow
+#                     if trace_type in trace_info_types_map:
+#                         trace_info_types = trace_info_types_map[trace_type]
+#                         for trace_info_type in trace_info_types:
+#                             if trace_info_type in trace:
+#                                 trace_id = trace[trace_info_type]["traceId"]
+#                                 if trace_id not in trace_steps:
+#                                     trace_steps[trace_id] = [trace]
+#                                 else:
+#                                     trace_steps[trace_id].append(trace)
+#                                 break
+#                     else:
+#                         trace_id = trace["traceId"]
+#                         trace_steps[trace_id] = [
+#                             {
+#                                 trace_type: trace
+#                             }
+#                         ]
+
+#                 # Show trace steps in JSON similar to the Bedrock console
+#                 for trace_id in trace_steps.keys():
+#                     with st.expander(f"Trace Step " + str(step_num), expanded=False):
+#                         for trace in trace_steps[trace_id]:
+#                             trace_str = json.dumps(trace, indent=2)
+#                             st.code(trace_str, language="json", line_numbers=trace_str.count("\n"))
+#                     step_num = step_num + 1
+#         if not has_trace:
+#             st.text("None")
+
+#     st.subheader("Citations")
+#     if len(st.session_state.citations) > 0:
+#         citation_num = 1
+#         for citation in st.session_state.citations:
+#             for retrieved_ref_num, retrieved_ref in enumerate(citation["retrievedReferences"]):
+#                 with st.expander("Citation [" + str(citation_num) + "]", expanded=False):
+#                     citation_str = json.dumps({
+#                         "generatedResponsePart": citation["generatedResponsePart"],
+#                         "retrievedReference": citation["retrievedReferences"][retrieved_ref_num]
+#                     }, indent=2)
+#                     st.code(citation_str, language="json", line_numbers=trace_str.count("\n"))
+#                 citation_num = citation_num + 1
+#     else:
+#         st.text("None")
