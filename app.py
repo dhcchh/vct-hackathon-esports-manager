@@ -8,7 +8,7 @@ import re
 # Get config from environment variables
 agent_id = st.secrets["AWS_AGENT_ID"]
 agent_alias_id = st.secrets["AWS_ALIAS_ID"]
-ui_title = "Agents for Amazon Bedrock Test UI"
+ui_title = "VCT Digital Assistant"
 ui_icon = ""
 
 def init_state():
@@ -47,7 +47,7 @@ if prompt := st.chat_input():
         modified_prompt = prompt
     st.session_state.messages.append({"role": "user", "content": modified_prompt})
     with st.chat_message("user"):
-        st.write(modified_prompt)
+        st.write(prompt)
 
     with st.chat_message("assistant"):
         placeholder = st.empty()
