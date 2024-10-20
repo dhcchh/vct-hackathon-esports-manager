@@ -38,7 +38,7 @@ if prompt := st.chat_input():
     # Check Prompt for team building, provide additional context
     if re.search(r"\bbuild a team\b", prompt.lower()):
         modified_prompt = (prompt 
-                           + " List only 5 players with their respective roles. IGL. 2. 3. 4. 5." 
+                           + " List only 5 players with their respective roles. (IGL)1. 2. 3. 4. 5." 
                            + " Answer questions about player performance with specific agents (in-game playable characters)."
                            + " Include category of agent."
                            + " Provide insights on team strategy, strengths and weaknesses.")
