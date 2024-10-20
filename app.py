@@ -28,7 +28,7 @@ def get_bedrock_agent_response(prompt):
                            + " Give player performance."
                            + " Assign roles to players on the team and include category of agents."
                            + " One of these players must also take on additional role of in-game leader (IGL)." 
-                           + " Give team strategy, strengths and weaknesses.")
+                           + " Give team strategy, strengths and weaknesses, language issues.")
     else:
         modified_prompt = prompt
 
