@@ -81,7 +81,6 @@ def get_bedrock_agent_response(prompt):
 
 # Create a chat-like interface with the conversation history
 st.write("### Chat with ScoutBot")
-chat_container = st.container()
 
 # Add CSS to make the chat scrollable and more like a traditional chat box
 st.markdown("""
@@ -93,6 +92,8 @@ st.markdown("""
         padding: 10px;
         background-color: #f9f9f9;
         border-radius: 5px;
+        display: flex;
+        flex-direction: column-reverse; /* Keep the latest messages at the bottom */
     }
     .message {
         padding: 5px;
@@ -112,9 +113,9 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Display the chat history inside the styled container
-with chat_container:
+with st.container():
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    for chat in st.session_state.conversation_history:
+    for chat in reversed(st.session_state.conversation_history):
         st.markdown(f"<div class='message user-message'>🗨️ User: {chat['user']}</div>", unsafe_allow_html=True)
         st.markdown(f"<div class='message bot-message'>🤖 ScoutBot: {chat['agent']}</div>", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
