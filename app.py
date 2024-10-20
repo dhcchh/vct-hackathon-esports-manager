@@ -5,7 +5,7 @@ from services import bedrock_agent_runtime
 import re
 
 # Set up Streamlit page configuration
-st.title('Welcome to VALORANT eSports manager ChatBot! 🎯')
+st.title('Welcome to VALORANT eSports ScoutBot! 🎯')
 st.write(
     """
     Hi there! 👋 I'm ScoutBot, your friendly digital assistant here to help with scouting and recruiting top VALORANT esports players. 
@@ -70,8 +70,15 @@ def get_bedrock_agent_response(prompt):
         st.error(f"An error occurred: {e}")
         return None
 
+# Display conversation history in a chat-like interface
+st.write("### Conversation History")
+for chat in st.session_state.conversation_history:
+    st.write(f"**User:** {chat['user']}")
+    st.write(f"**ScoutBot:** {chat['agent']}")
+    st.write("---")  # Separator line for readability
+
 # User input for the prompt
-prompt = st.text_area('Your Prompt', height=200)
+prompt = st.text_area('Your Prompt', height=100)
 
 # When the user submits the prompt
 if st.button('Submit'):
@@ -79,20 +86,10 @@ if st.button('Submit'):
         with st.spinner('Processing...'):
             response = get_bedrock_agent_response(prompt)
             if response:
-                # Display the response text
-                st.subheader('Model Response:')
-                st.write(response["output_text"])
-
-                # Display any citations found
+                # Display any citations found (optional)
                 if response.get("citations"):
                     st.subheader("Citations:")
                     for citation in response["citations"]:
                         st.write(f"- {citation}")
-
-                # Optional: Show traces (for debugging or insights)
-                # if response.get("trace"):
-                #     st.subheader("Trace Information:")
-                #     trace_str = json.dumps(response["trace"], indent=2)
-                #     st.code(trace_str, language="json")
     else:
         st.warning('Please enter a prompt before submitting.')
