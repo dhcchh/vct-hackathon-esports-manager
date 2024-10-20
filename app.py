@@ -25,6 +25,7 @@ def get_bedrock_agent_response(prompt):
     if re.search(r"\bbuild a team\b", prompt.lower()):
         modified_prompt = (prompt 
                            + " A team must have 5 players." 
+                           + " Answer questions about player performance with specific agents (in-game playable characters)."
                            + " Assign roles to players on the team and explain their contribution."
                            + " Include category of agent."
                            + " One of these players must also take on additional role of in-game leader (IGL)." 
