@@ -39,12 +39,13 @@ if prompt := st.chat_input():
     if re.search(r"\bbuild a team\b", prompt.lower()):
         modified_prompt = (
             prompt 
-            + " List exactly 5 players with their respective roles. Each player must be a separate entry, even if their roles are the same."
-            + " Format as follows: (IGL)1. 1 PlayerName - Role, 2. 1 PlayerName - Role, 3. 1 PlayerName - Role, 4. 1 PlayerName - Role, 5. 1 PlayerName - Role."
-            + " Ensure there are no more than 5 players."
-            + " Answer questions about player performance with specific agents."
-            + " Include category of agent."
-            + " Provide team strategy, strengths, and weaknesses."
+        + " List exactly 5 players with their respective roles. Each player must be a separate entry, even if their roles are the same."
+        + " Do not group players under the same role, list them individually."
+        + " Format as follows: (IGL)1. PlayerName - Role, 2. PlayerName - Role, 3. PlayerName - Role, 4. PlayerName - Role, 5. PlayerName - Role."
+        + " Only list 5 players, and no more."
+        + " Answer questions about player performance with specific agents (in-game playable characters)."
+        + " Include category of agent."
+        + " Provide insights on team strategy, strengths, and weaknesses."
         )
     else:
         modified_prompt = prompt
@@ -63,6 +64,13 @@ if prompt := st.chat_input():
             prompt
         )
         output_text = response["output_text"]
+
+        # Ensure there are exactly 5 players listed
+        player_count = len(re.findall(r"\d\.\s\w+", output_text))  # Modify regex if needed for matching format
+        if player_count != 5:
+            output_text = "I have found more than 5 players that could be used. Which of these players do you prefer?"
+
+        placeholder.markdown(output_text, unsafe_allow_html=True)
 
         # Add citations
         if len(response["citations"]) > 0:
@@ -85,76 +93,3 @@ if prompt := st.chat_input():
         st.session_state.messages.append({"role": "assistant", "content": output_text})
         st.session_state.citations = response["citations"]
         st.session_state.trace = response["trace"]
-
-# trace_types_map = {
-#     "Pre-Processing": ["preGuardrailTrace", "preProcessingTrace"],
-#     "Orchestration": ["orchestrationTrace"],
-#     "Post-Processing": ["postProcessingTrace", "postGuardrailTrace"]
-# }
-
-# trace_info_types_map = {
-#     "preProcessingTrace": ["modelInvocationInput", "modelInvocationOutput"],
-#     "orchestrationTrace": ["invocationInput", "modelInvocationInput", "modelInvocationOutput", "observation", "rationale"],
-#     "postProcessingTrace": ["modelInvocationInput", "modelInvocationOutput", "observation"]
-# }
-
-# Sidebar section for trace
-# with st.sidebar:
-#     st.title("Trace")
-
-#     # Show each trace types in separate sections
-#     step_num = 1
-#     for trace_type_header in trace_types_map:
-#         st.subheader(trace_type_header)
-
-#         # Organize traces by step similar to how it is shown in the Bedrock console
-#         has_trace = False
-#         for trace_type in trace_types_map[trace_type_header]:
-#             if trace_type in st.session_state.trace:
-#                 has_trace = True
-#                 trace_steps = {}
-
-#                 for trace in st.session_state.trace[trace_type]:
-#                     # Each trace type and step may have different information for the end-to-end flow
-#                     if trace_type in trace_info_types_map:
-#                         trace_info_types = trace_info_types_map[trace_type]
-#                         for trace_info_type in trace_info_types:
-#                             if trace_info_type in trace:
-#                                 trace_id = trace[trace_info_type]["traceId"]
-#                                 if trace_id not in trace_steps:
-#                                     trace_steps[trace_id] = [trace]
-#                                 else:
-#                                     trace_steps[trace_id].append(trace)
-#                                 break
-#                     else:
-#                         trace_id = trace["traceId"]
-#                         trace_steps[trace_id] = [
-#                             {
-#                                 trace_type: trace
-#                             }
-#                         ]
-
-#                 # Show trace steps in JSON similar to the Bedrock console
-#                 for trace_id in trace_steps.keys():
-#                     with st.expander(f"Trace Step " + str(step_num), expanded=False):
-#                         for trace in trace_steps[trace_id]:
-#                             trace_str = json.dumps(trace, indent=2)
-#                             st.code(trace_str, language="json", line_numbers=trace_str.count("\n"))
-#                     step_num = step_num + 1
-#         if not has_trace:
-#             st.text("None")
-
-#     st.subheader("Citations")
-#     if len(st.session_state.citations) > 0:
-#         citation_num = 1
-#         for citation in st.session_state.citations:
-#             for retrieved_ref_num, retrieved_ref in enumerate(citation["retrievedReferences"]):
-#                 with st.expander("Citation [" + str(citation_num) + "]", expanded=False):
-#                     citation_str = json.dumps({
-#                         "generatedResponsePart": citation["generatedResponsePart"],
-#                         "retrievedReference": citation["retrievedReferences"][retrieved_ref_num]
-#                     }, indent=2)
-#                     st.code(citation_str, language="json", line_numbers=trace_str.count("\n"))
-#                 citation_num = citation_num + 1
-#     else:
-#         st.text("None")
