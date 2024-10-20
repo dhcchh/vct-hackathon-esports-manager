@@ -42,7 +42,7 @@ if prompt := st.chat_input():
                            + " 1 of these players must also take on additional role of in-game leader (IGL)." 
                            + " Answer questions about player performance with specific agents (in-game playable characters)."
                            + " Include category of agent."
-                           + " Provide insights on team strategy and hypothesize team strengths and weaknesses.")
+                           + " Provide insights on team strategy, strengths and weaknesses.")
     else:
         modified_prompt = prompt
     st.session_state.messages.append({"role": "user", "content": modified_prompt})
