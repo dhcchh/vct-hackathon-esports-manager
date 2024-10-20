@@ -65,11 +65,6 @@ if prompt := st.chat_input():
         )
         output_text = response["output_text"]
 
-        # Ensure there are exactly 5 players listed
-        player_count = len(re.findall(r"\d\.\s\w+", output_text))  # Modify regex if needed for matching format
-        if player_count != 5:
-            output_text = "I have found more than 5 players that could be used. Which of these players do you prefer?"
-
         placeholder.markdown(output_text, unsafe_allow_html=True)
 
         # Add citations
