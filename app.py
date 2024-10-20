@@ -40,9 +40,9 @@ if prompt := st.chat_input():
         modified_prompt = (
             prompt 
             + " List exactly 5 players with their respective roles. Each player must be a separate entry, even if their roles are the same."
-            + " Format as follows: (IGL)1. PlayerName - Role, 2. PlayerName - Role, 3. PlayerName - Role, 4. PlayerName - Role, 5. PlayerName - Role."
+            + " Format as follows: (IGL)1. 1 PlayerName - Role, 2. 1 PlayerName - Role, 3. 1 PlayerName - Role, 4. 1 PlayerName - Role, 5. 1 PlayerName - Role."
             + " Ensure there are no more than 5 players."
-            + " Answer questions about player performance with specific agents (in-game playable characters)."
+            + " Answer questions about player performance with specific agents."
             + " Include category of agent."
             + " Provide team strategy, strengths, and weaknesses."
         )
