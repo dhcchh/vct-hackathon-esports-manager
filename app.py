@@ -5,8 +5,20 @@ from services import bedrock_agent_runtime
 import re
 
 # Set up Streamlit page configuration
-st.title('VALORANT eSports Manager Chatbot')
-st.write('Enter a prompt to receive a response from the Bedrock Agent.')
+st.title('Welcome to VALORANT eSports manager ChatBot! 🎯')
+st.write(
+    """
+    Hi there! 👋 I'm ScoutBot, your friendly digital assistant here to help with scouting and recruiting top VALORANT esports players. 
+    Whether you're looking to build a well-rounded team, analyze player performance, or explore potential recruits, I'm here to assist you every step of the way. 
+
+    You can ask me questions like:
+    - "Build a team using only players from VCT International."
+    - "Build a team that includes at least two players from an underrepresented group, such as the Game Changers program."
+    - "Can you give insights on player performance with specific agents?"
+
+    My goal is to make your scouting process easier and help you assemble a winning team! Let’s get started! 🚀
+    """
+)
 
 # Initialize session state
 if "session_id" not in st.session_state:
