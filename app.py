@@ -21,9 +21,9 @@ def get_bedrock_agent_response(prompt):
     agent_alias_id = st.secrets["AWS_ALIAS_ID"]
     session_id = st.session_state.session_id
 
-    # Check Prompt for team building
+    # Check Prompt for team building, provide additional context
     if re.search(r"\bbuild a team\b", prompt.lower()):
-        modified_prompt = prompt + "A team must have only 5 players. At least 1 of them is igl. 1 entry. 1 smoker. 1 support."
+        modified_prompt = prompt + " A team must have 5 players. There must be at least 1 entry, 1 smoker, and 1 support. " + "One of these players must also take on the role of in-game leader (IGL)."
     else:
         modified_prompt = prompt
 
