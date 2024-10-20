@@ -56,14 +56,14 @@ if prompt := st.chat_input():
 
     with st.chat_message("assistant"):
         placeholder = st.empty()
-        placeholder.markdown("thinking...")
+        placeholder.markdown("Thinking...")
         response = bedrock_agent_runtime.invoke_agent(
             agent_id,
             agent_alias_id,
             st.session_state.session_id,
             prompt
         )
-        output_text = response["output_text"] + "If there are more than 5 players, you may choose which to include depending on the type of team you would like to build."
+        output_text = response["output_text"] + " If there are more than 5 players provided, you may choose which to include depending on the type of team you would like to build."
 
         placeholder.markdown(output_text, unsafe_allow_html=True)
 
