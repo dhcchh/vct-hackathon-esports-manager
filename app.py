@@ -42,7 +42,7 @@ if prompt := st.chat_input():
         + " List exactly 5 players with their respective roles. Each player must be a separate entry, even if their roles are the same."
         + " Do not group players under the same role, list them individually."
         + " Format as follows: (IGL + Role)1. PlayerName , (Role)2. PlayerName , (Role)3. PlayerName , (Role)4. PlayerName  , (Role)5. PlayerName"
-        + " Only list 5 players, and no more."
+        + " Ensure that there are only 5 players given, even if there are multiple players for some roles."
         + " Answer questions about player performance with specific agents (in-game playable characters)."
         + " Include category of agent."
         + " Provide insights on team strategy, strengths, and weaknesses."
@@ -63,7 +63,7 @@ if prompt := st.chat_input():
             st.session_state.session_id,
             prompt
         )
-        output_text = response["output_text"]
+        output_text = response["output_text"] + "If there are more than 5 players, you may choose which to include depending on the type of team you would like to build."
 
         placeholder.markdown(output_text, unsafe_allow_html=True)
 
