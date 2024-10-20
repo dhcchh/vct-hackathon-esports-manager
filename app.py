@@ -80,9 +80,9 @@ if st.button('Submit'):
                         st.write(f"- {citation}")
 
                 # Optional: Show traces (for debugging or insights)
-                if response.get("trace"):
-                    st.subheader("Trace Information:")
-                    trace_str = json.dumps(response["trace"], indent=2)
-                    st.code(trace_str, language="json")
+                # if response.get("trace"):
+                #     st.subheader("Trace Information:")
+                #     trace_str = json.dumps(response["trace"], indent=2)
+                #     st.code(trace_str, language="json")
     else:
         st.warning('Please enter a prompt before submitting.')
