@@ -23,7 +23,7 @@ def get_bedrock_agent_response(prompt):
 
     # Check Prompt for team building, provide additional context
     if re.search(r"\bbuild a team\b", prompt.lower()):
-        modified_prompt = prompt + " A team must have 5 unique players. There must be at least 1 entry, 1 smoker, and 1 support. " + "One of these players must also take on the role of in-game leader (IGL)."
+        modified_prompt = prompt + " A team must have 5 unique players." + "One of these players must also take on additional role of in-game leader (IGL)."
     else:
         modified_prompt = prompt
 
