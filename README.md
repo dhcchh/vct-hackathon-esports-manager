@@ -59,7 +59,7 @@ This core architecture integrates the aforementioned components to deliver team 
 
 1. **Liquipedia**  
    * The primary source of player data, including player names, teams, roles, and agents played. Liquipedia provides detailed information on player stats, team rosters, and tournament performances, which is critical for evaluating player performance and making team composition decisions. We call the Liquipedia API to pull data from the website.
-   * **Country of Origin Data** : Player languages are assumed based on their country of origin, and other languages that players speak are imputed manually.
+   * **Country of Origin Data** : Player languages are inferred based on their country of origin, and other languages that players speak are imputed manually.
 
 2. **VALORANT Esports Videos and Forums**  
    Regional playstyles and strategic tendencies are inferred from community discussions and esports videos. This qualitative data helps define how different regions approach the game, influencing how teams are formed based on playstyle compatibility.
