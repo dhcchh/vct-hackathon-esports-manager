@@ -4,8 +4,6 @@ This is our repository for VCT eSports Manager Hackathon. It is made by [Hoo Kai
 
 The goal is to support the scouting and recruitment process for VALORANT eSports teams using an LLM-powered digital assistant. The assistant helps build optimal teams by answering questions and analysing. 
 
-Feel free to try out the app here : [link to the app on Streamlit Cloud](https://vct-hackathon-bot-kwjf4xyujwrvhntrmnp55i.streamlit.app/)
-
 # Project Layout 
 ```
 vct-chatbot-repository/
